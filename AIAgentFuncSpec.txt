@@ -1,0 +1,162 @@
+A fullstack application: FrontEnd React Native, BackEnd langgraph, python
+
+Let's first generate backend
+
+BackEnd:
+
+**Baby Manager Agent – Function Specification**
+
+**Purpose:**
+An AI agent that helps parents manage baby care by recording key baby activities and providing intelligent suggestions based on time and past records.
+
+---
+
+**Core Functionalities:**
+
+1. **Record Baby Activities**
+
+   - **Record Feeding**
+     - Input: `milk_amount (int, in ml)`, `feeding_time (optional, default to now)`
+     - Function: Stores the amount and time of feeding
+
+   - **Record Sleep**
+     - Input: `sleep_start_time`, `sleep_end_time`
+     - Function: Stores baby’s sleep duration
+
+   - **Record Diaper Change**
+     - Input: `change_time (optional, default to now)`
+     - Function: Stores time when diaper was changed
+
+2. **Suggest Actions Based on History**
+
+   - **Should Feed?**
+     - Logic: Based on last feeding time and milk amount
+     - Rules:
+       - If no record exists → Suggest feeding
+       - If >3 hours since last feeding → Suggest feeding
+       - If <100ml last time and >2 hours passed → Suggest feeding
+
+   - **Should Sleep?**
+     - Logic: Based on time since last wake-up
+     - Rules:
+       - If baby has been awake >2 hours → Suggest sleep
+       - If recent nap ended <2 hours ago → No need to sleep yet
+
+   - **Should Change Diaper?**
+     - Logic: Based on last change time
+     - Rules:
+       - If >2 hours since last change → Suggest checking or changing
+
+---
+
+**Optional Future Features:**
+
+- Export daily log summary
+- Personalized feeding/sleep pattern detection
+- Mobile push notifications
+
+---
+
+**Example Interaction Flow:**
+
+```
+User: "The baby drank 120ml milk just now"
+Agent: "✅ Feeding recorded: 120ml at 10:42 AM"
+
+User: "Should I feed the baby again?"
+Agent: "🕒 It's been 3 hours since the last feeding. Recommended to feed now."
+
+User: "She woke up at 9AM, should she nap?"
+Agent: "🛌 She’s been awake for 2.5 hours. Time for a nap!"
+```
+
+
+Front End
+
+Mom AI Agent – UI-Driven Function Specification
+🔰 Purpose:
+This AI agent assists parents in baby care by:
+
+Logging feeding, sleep, and diaper changes
+
+Displaying structured summaries in the UI
+
+Providing suggestions or answers via AI (chatbot)
+
+🧩 Functional Areas (Aligned with UI):
+1. 🍼 Feed Section
+Display:
+Shows past feeding times (e.g., 8:00 AM 12:00 PM, or 4:00 PM)
+
+Shows latest feeding log message: Another feeding was logged
+
+Functions:
+log_feeding(milk_amount: int, time: Optional[datetime]) → str
+
+Logs a feeding entry
+
+get_feeding_times() → List[str]
+
+Returns a list of today's feeding timestamps
+
+get_last_feeding_message() → str
+
+Returns a message like "Another feeding was logged"
+
+should_feed_now() → str
+
+Suggests whether it's time to feed based on time and past amount
+
+2. 😴 Sleep Section
+Display:
+Shows sleep duration and wake-up time (e.g., 9h 30m — 6:30 AM)
+
+Functions:
+log_sleep(start_time: datetime, end_time: datetime) → str
+
+Logs a sleep session
+
+get_last_sleep_summary() → str
+
+Returns a formatted string like "9h 30m — 6:30 AM"
+
+should_sleep_now() → str
+
+Suggests whether the baby should nap now
+
+3. 💩 Diaper Section
+Display:
+Shows last diaper change time (e.g., Last 10:15 AM)
+
+Functions:
+log_diaper_change(time: Optional[datetime]) → str
+
+Logs a diaper change
+
+get_last_diaper_time() → str
+
+Returns the latest change time formatted
+
+should_change_diaper() → str
+
+Suggests whether it's time to check/change diaper
+
+4. 💬 Ask AI Section
+Display:
+Input box for custom parenting questions (e.g., "What to do if the baby won’t sleep?")
+
+Function:
+ask_parenting_question(question: str) → str
+
+Sends question to LLM for AI-generated advice (e.g., GPT-4)
+
+5. 🧭 Bottom Navigation (Home | Trend | Tasks | Chatbot)
+These control app views:
+
+Home → Shows baby status summary (this screen)
+
+Trend → (Future scope) Charts/summaries of feeding/sleep/diaper
+
+Tasks → Scheduled reminders or routines (planned)
+
+Chatbot → Conversational interface for Mom AI Agent
