@@ -1,9 +1,15 @@
 from fastapi import FastAPI
 from datetime import datetime
-from backend.baby_manager import BabyManager
+from pydantic import BaseModel
+from backend.baby_manager import BabyManager, BabyInfo
 
 app = FastAPI(title="Baby Manager API")
 mgr = BabyManager()
+
+class BabyInfoRequest(BaseModel):
+    gender: str
+    birthday: datetime
+    weight_kg: float
 
 __all__ = ["app"]  # Explicitly export app for ASGI
 
@@ -31,6 +37,21 @@ async def record_diaper_change():
 @app.get("/suggestions")
 async def get_suggestions(current_time: datetime = None):
     return mgr.get_suggestions(current_time)
+
+@app.post("/setup")
+async def initial_setup(info: BabyInfoRequest):
+    """Set initial baby information and records"""
+    mgr.baby_info = BabyInfo(**info.dict())
+    return {"status": "Baby information updated"}
+
+@app.put("/baby-info")
+async def update_baby_info(info: BabyInfoRequest):
+    mgr.baby_info = BabyInfo(**info.dict())
+    return {"status": "Baby information updated"}
+
+@app.get("/baby-info")
+async def get_baby_info():
+    return mgr.baby_info
 
 @app.post("/test/reset")
 async def reset_test_data():
